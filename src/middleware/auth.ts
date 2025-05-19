@@ -1,17 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../utils/auth';
 
-// Extend Express Request type to include user
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        user_id: number;
-      };
-    }
-  }
-}
-
 export const authenticateToken = async (
   req: Request,
   res: Response,
@@ -32,10 +21,10 @@ export const authenticateToken = async (
       return;
     }
 
-    // Add user info to request
-    req.user = { user_id: decoded.user_id };
+    // Add user info to request using the unified shape
+    req.user = { id: decoded.user_id };
     next();
   } catch (error) {
     res.status(401).json({ error: 'Invalid token' });
   }
-}; 
+};
