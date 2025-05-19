@@ -47,7 +47,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 const startServer = async () => {
   try {
     // Connect to database
-    await connectDB();
+    // await connectDB();
     
     // Start listening
     app.listen(PORT, () => {
