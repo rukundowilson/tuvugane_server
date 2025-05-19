@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: tuvugane-api
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DB_HOST
+        fromDatabase:
+          name: tuvugane-db
+          property: host
+      - key: DB_NAME
+        fromDatabase:
+          name: tuvugane-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: tuvugane-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: tuvugane-db
+          property: password
+      
+databases:
+  - name: tuvugane-db
+    type: mysql 
