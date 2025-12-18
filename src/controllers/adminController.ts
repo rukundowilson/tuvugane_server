@@ -101,7 +101,7 @@ export const getAdminsByAgency = async (req: Request, res: Response): Promise<vo
     const { agencyId } = req.params;
     
     // Check if the agency exists
-    const agencies = await query('SELECT * FROM Agencies WHERE agency_id = ?', [agencyId]);
+    const agencies = await query('SELECT * FROM agencies WHERE agency_id = ?', [agencyId]);
     
     if (agencies.length === 0) {
       res.status(404).json({ message: 'Agency not found' });
@@ -132,8 +132,8 @@ export const getAdminById = async (req: Request, res: Response): Promise<void> =
     // Join with Agencies table to get agency name
     const admins = await query(`
       SELECT a.admin_id, a.name, a.email, a.agency_id, a.created_at, ag.name as agency_name
-      FROM Admins a
-      LEFT JOIN Agencies ag ON a.agency_id = ag.agency_id
+      FROM admins a
+      LEFT JOIN agencies ag ON a.agency_id = ag.agency_id
       WHERE a.admin_id = ?
     `, [id]);
     
@@ -222,7 +222,7 @@ export const updateAdmin = async (req: Request, res: Response): Promise<void> =>
     
     // Execute the update query
     await query(
-      `UPDATE Admins SET ${updateFields.join(', ')} WHERE admin_id = ?`,
+      `UPDATE admins SET ${updateFields.join(', ')} WHERE admin_id = ?`,
       updateValues
     );
     
@@ -323,7 +323,7 @@ export const loginAdmin = async (req: Request, res: Response): Promise<void> => 
     }
     
     // Get agency name
-    const agencies = await query('SELECT name FROM Agencies WHERE agency_id = ?', [admin.agency_id]);
+    const agencies = await query('SELECT name FROM agencies WHERE agency_id = ?', [admin.agency_id]);
     const agencyName = agencies.length > 0 ? agencies[0].name : null;
     
     if (!agencyName) {
@@ -371,8 +371,8 @@ export const getAdminProfile = async (req: Request, res: Response): Promise<void
     // Join with Agencies table to get agency name
     const admins = await query(`
       SELECT a.admin_id, a.name, a.email, a.agency_id, a.created_at, ag.name as agency_name
-      FROM Admins a
-      LEFT JOIN Agencies ag ON a.agency_id = ag.agency_id
+      FROM admins a
+      LEFT JOIN agencies ag ON a.agency_id = ag.agency_id
       WHERE a.admin_id = ?
     `, [adminId]);
     

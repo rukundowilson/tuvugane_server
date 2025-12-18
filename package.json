@@ -9,6 +9,9 @@
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
     "build": "tsc",
+    "create-admin": "ts-node src/scripts/create-admin.ts",
+    "create-default-admin": "ts-node src/scripts/create-default-admin.ts",
+    "migrate": "ts-node scripts/run-migration.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

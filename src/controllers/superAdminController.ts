@@ -13,7 +13,7 @@ export const registerSuperAdmin = async (req: Request, res: Response): Promise<v
 
   try {
     // Check if super admin exists
-    const existingAdmins = await query('SELECT * FROM SuperAdmins WHERE email = ?', [email]);
+    const existingAdmins = await query('SELECT * FROM superadmins WHERE email = ?', [email]);
 
     if (existingAdmins.length > 0) {
       res.status(400).json({ message: 'Super Admin already exists with this email' });
@@ -26,7 +26,7 @@ export const registerSuperAdmin = async (req: Request, res: Response): Promise<v
 
     // Create super admin - set as verified by default
     const result = await query(
-      'INSERT INTO SuperAdmins (name, email, password, phone, is_verified) VALUES (?, ?, ?, ?, ?)',
+      'INSERT INTO superadmins (name, email, password, phone, is_verified) VALUES (?, ?, ?, ?, ?)',
       [name, email, hashedPassword, phone || null, 1]  // Set is_verified to 1
     );
 
@@ -56,7 +56,7 @@ export const verifySuperAdmin = async (req: Request, res: Response): Promise<voi
   try {
     // Find super admin with this verification token
     const admins = await query(
-      'SELECT * FROM SuperAdmins WHERE verification_token = ? AND token_expiry > NOW()',
+      'SELECT * FROM superadmins WHERE verification_token = ? AND token_expiry > NOW()',
       [token]
     );
 
@@ -67,7 +67,7 @@ export const verifySuperAdmin = async (req: Request, res: Response): Promise<voi
 
     // Update super admin to verified
     await query(
-      'UPDATE SuperAdmins SET is_verified = 1, verification_token = NULL, token_expiry = NULL WHERE super_admin_id = ?',
+      'UPDATE superadmins SET is_verified = 1, verification_token = NULL, token_expiry = NULL WHERE super_admin_id = ?',
       [admins[0].super_admin_id]
     );
 
@@ -86,7 +86,7 @@ export const loginSuperAdmin = async (req: Request, res: Response): Promise<void
 
   try {
     // Find super admin by email
-    const admins = await query('SELECT * FROM SuperAdmins WHERE email = ?', [email]);
+    const admins = await query('SELECT * FROM superadmins WHERE email = ?', [email]);
 
     if (admins.length === 0) {
       res.status(401).json({ message: 'Invalid email or password' });
@@ -125,7 +125,7 @@ export const getSuperAdminProfile = async (req: Request, res: Response): Promise
     // @ts-ignore - req.user is added by the auth middleware
     const adminId = req.user.id;
     
-    const admins = await query('SELECT super_admin_id, name, email, phone, created_at FROM SuperAdmins WHERE super_admin_id = ?', [adminId]);
+    const admins = await query('SELECT super_admin_id, name, email, phone, created_at FROM superadmins WHERE super_admin_id = ?', [adminId]);
 
     if (admins.length === 0) {
       res.status(404).json({ message: 'Super Admin not found' });
@@ -145,7 +145,7 @@ export const getSuperAdminProfile = async (req: Request, res: Response): Promise
 export const getAllSuperAdmins = async (req: Request, res: Response): Promise<void> => {
   try {
     const superAdmins = await query(
-      'SELECT super_admin_id, name, email, phone, created_at FROM SuperAdmins ORDER BY name ASC'
+      'SELECT super_admin_id, name, email, phone, created_at FROM superadmins ORDER BY name ASC'
     );
     
     res.json(superAdmins);
@@ -163,7 +163,7 @@ export const resendVerification = async (req: Request, res: Response): Promise<v
 
   try {
     // Find super admin by email
-    const admins = await query('SELECT * FROM SuperAdmins WHERE email = ?', [email]);
+    const admins = await query('SELECT * FROM superadmins WHERE email = ?', [email]);
 
     if (admins.length === 0) {
       res.status(404).json({ message: 'No account found with this email' });
@@ -184,7 +184,7 @@ export const resendVerification = async (req: Request, res: Response): Promise<v
 
     // Update verification token
     await query(
-      'UPDATE SuperAdmins SET verification_token = ?, token_expiry = ? WHERE super_admin_id = ?',
+      'UPDATE superadmins SET verification_token = ?, token_expiry = ? WHERE super_admin_id = ?',
       [verificationToken, tokenExpiry, admin.super_admin_id]
     );
 

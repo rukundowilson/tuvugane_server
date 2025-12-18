@@ -17,7 +17,6 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const morgan_1 = __importDefault(require("morgan"));
 const path_1 = __importDefault(require("path"));
-const db_1 = __importDefault(require("./config/db"));
 const testRoutes_1 = __importDefault(require("./routes/testRoutes"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const superAdminRoutes_1 = __importDefault(require("./routes/superAdminRoutes"));
@@ -52,7 +51,7 @@ app.use((err, req, res, next) => {
 const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Connect to database
-        yield (0, db_1.default)();
+        // await connectDB();
         // Start listening
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);

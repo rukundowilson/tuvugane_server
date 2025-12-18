@@ -81,7 +81,7 @@ export const superAdminOnly = async (req: Request, res: Response, next: NextFunc
     }
 
     // Otherwise check database (backward compatibility)
-    const superAdmins = await query('SELECT * FROM SuperAdmins WHERE super_admin_id = ?', [req.user.id]);
+    const superAdmins = await query('SELECT * FROM superadmins WHERE super_admin_id = ?', [req.user.id]);
 
     if (superAdmins.length === 0) {
       res.status(403).json({ message: 'Not authorized, super admin access required' });
@@ -111,7 +111,7 @@ export const agencyAdminOnly = async (req: Request, res: Response, next: NextFun
     }
 
     // Otherwise check database (backward compatibility)
-    const admins = await query('SELECT * FROM Admins WHERE admin_id = ?', [req.user.id]);
+    const admins = await query('SELECT * FROM admins WHERE admin_id = ?', [req.user.id]);
 
     if (admins.length === 0) {
       res.status(403).json({ message: 'Not authorized, agency admin access required' });

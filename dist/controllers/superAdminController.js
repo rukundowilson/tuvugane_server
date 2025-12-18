@@ -24,7 +24,7 @@ const registerSuperAdmin = (req, res) => __awaiter(void 0, void 0, void 0, funct
     const { name, email, password, phone } = req.body;
     try {
         // Check if super admin exists
-        const existingAdmins = yield (0, db_1.query)('SELECT * FROM SuperAdmins WHERE email = ?', [email]);
+        const existingAdmins = yield (0, db_1.query)('SELECT * FROM superadmins WHERE email = ?', [email]);
         if (existingAdmins.length > 0) {
             res.status(400).json({ message: 'Super Admin already exists with this email' });
             return;
@@ -33,7 +33,7 @@ const registerSuperAdmin = (req, res) => __awaiter(void 0, void 0, void 0, funct
         const salt = yield bcryptjs_1.default.genSalt(10);
         const hashedPassword = yield bcryptjs_1.default.hash(password, salt);
         // Create super admin - set as verified by default
-        const result = yield (0, db_1.query)('INSERT INTO SuperAdmins (name, email, password, phone, is_verified) VALUES (?, ?, ?, ?, ?)', [name, email, hashedPassword, phone || null, 1] // Set is_verified to 1
+        const result = yield (0, db_1.query)('INSERT INTO superadmins (name, email, password, phone, is_verified) VALUES (?, ?, ?, ?, ?)', [name, email, hashedPassword, phone || null, 1] // Set is_verified to 1
         );
         if (result.insertId) {
             // Return success response with token for immediate login
@@ -61,13 +61,13 @@ const verifySuperAdmin = (req, res) => __awaiter(void 0, void 0, void 0, functio
     const { token } = req.params;
     try {
         // Find super admin with this verification token
-        const admins = yield (0, db_1.query)('SELECT * FROM SuperAdmins WHERE verification_token = ? AND token_expiry > NOW()', [token]);
+        const admins = yield (0, db_1.query)('SELECT * FROM superadmins WHERE verification_token = ? AND token_expiry > NOW()', [token]);
         if (admins.length === 0) {
             res.status(400).json({ message: 'Invalid or expired verification token' });
             return;
         }
         // Update super admin to verified
-        yield (0, db_1.query)('UPDATE SuperAdmins SET is_verified = 1, verification_token = NULL, token_expiry = NULL WHERE super_admin_id = ?', [admins[0].super_admin_id]);
+        yield (0, db_1.query)('UPDATE superadmins SET is_verified = 1, verification_token = NULL, token_expiry = NULL WHERE super_admin_id = ?', [admins[0].super_admin_id]);
         res.status(200).json({ message: 'Email verified successfully. You can now login.' });
     }
     catch (error) {
@@ -83,7 +83,7 @@ const loginSuperAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function
     const { email, password } = req.body;
     try {
         // Find super admin by email
-        const admins = yield (0, db_1.query)('SELECT * FROM SuperAdmins WHERE email = ?', [email]);
+        const admins = yield (0, db_1.query)('SELECT * FROM superadmins WHERE email = ?', [email]);
         if (admins.length === 0) {
             res.status(401).json({ message: 'Invalid email or password' });
             return;
@@ -118,7 +118,7 @@ const getSuperAdminProfile = (req, res) => __awaiter(void 0, void 0, void 0, fun
     try {
         // @ts-ignore - req.user is added by the auth middleware
         const adminId = req.user.id;
-        const admins = yield (0, db_1.query)('SELECT super_admin_id, name, email, phone, created_at FROM SuperAdmins WHERE super_admin_id = ?', [adminId]);
+        const admins = yield (0, db_1.query)('SELECT super_admin_id, name, email, phone, created_at FROM superadmins WHERE super_admin_id = ?', [adminId]);
         if (admins.length === 0) {
             res.status(404).json({ message: 'Super Admin not found' });
             return;
@@ -136,7 +136,7 @@ exports.getSuperAdminProfile = getSuperAdminProfile;
 // @access  Private (Super Admin only)
 const getAllSuperAdmins = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const superAdmins = yield (0, db_1.query)('SELECT super_admin_id, name, email, phone, created_at FROM SuperAdmins ORDER BY name ASC');
+        const superAdmins = yield (0, db_1.query)('SELECT super_admin_id, name, email, phone, created_at FROM superadmins ORDER BY name ASC');
         res.json(superAdmins);
     }
     catch (error) {
@@ -152,7 +152,7 @@ const resendVerification = (req, res) => __awaiter(void 0, void 0, void 0, funct
     const { email } = req.body;
     try {
         // Find super admin by email
-        const admins = yield (0, db_1.query)('SELECT * FROM SuperAdmins WHERE email = ?', [email]);
+        const admins = yield (0, db_1.query)('SELECT * FROM superadmins WHERE email = ?', [email]);
         if (admins.length === 0) {
             res.status(404).json({ message: 'No account found with this email' });
             return;
@@ -167,7 +167,7 @@ const resendVerification = (req, res) => __awaiter(void 0, void 0, void 0, funct
         const tokenExpiry = new Date();
         tokenExpiry.setHours(tokenExpiry.getHours() + 24); // Token valid for 24 hours
         // Update verification token
-        yield (0, db_1.query)('UPDATE SuperAdmins SET verification_token = ?, token_expiry = ? WHERE super_admin_id = ?', [verificationToken, tokenExpiry, admin.super_admin_id]);
+        yield (0, db_1.query)('UPDATE superadmins SET verification_token = ?, token_expiry = ? WHERE super_admin_id = ?', [verificationToken, tokenExpiry, admin.super_admin_id]);
         res.status(200).json({
             message: 'New verification token generated',
             verification_token: verificationToken

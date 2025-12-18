@@ -35,7 +35,7 @@ const createTestAdmin = async () => {
 
     // Check if admin with this email already exists
     const [existingAdmins] = await connection.execute(
-      'SELECT * FROM Admins WHERE email = ?', 
+      'SELECT * FROM admins WHERE email = ?', 
       [admin.email]
     );
     
@@ -48,7 +48,7 @@ const createTestAdmin = async () => {
       
       // Update the existing admin's password
       await connection.execute(
-        'UPDATE Admins SET password_hash = ? WHERE email = ?',
+        'UPDATE admins SET password_hash = ? WHERE email = ?',
         [hashedPassword, admin.email]
       );
       
@@ -60,7 +60,7 @@ const createTestAdmin = async () => {
 
       // Insert new admin
       const [result] = await connection.execute(
-        'INSERT INTO Admins (name, email, password_hash, agency_id) VALUES (?, ?, ?, ?)',
+        'INSERT INTO admins (name, email, password_hash, agency_id) VALUES (?, ?, ?, ?)',
         [admin.name, admin.email, hashedPassword, admin.agency_id]
       );
 

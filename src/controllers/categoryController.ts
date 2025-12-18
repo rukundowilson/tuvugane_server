@@ -13,6 +13,12 @@ export const createCategory = asyncHandler(async (req: Request, res: Response) =
     throw new Error('Please provide a category name');
   }
 
+  // Validate name length (max 255 characters)
+  if (name.length > 255) {
+    res.status(400);
+    throw new Error('Category name must be 255 characters or less');
+  }
+
   // Check if category already exists
   const [existingCategories] = await pool.query(
     'SELECT * FROM categories WHERE name = ?',
@@ -87,6 +93,12 @@ export const updateCategory = asyncHandler(async (req: Request, res: Response) =
   if (!name) {
     res.status(400);
     throw new Error('Please provide a category name');
+  }
+
+  // Validate name length (max 255 characters)
+  if (name.length > 255) {
+    res.status(400);
+    throw new Error('Category name must be 255 characters or less');
   }
 
   // Check if category exists

@@ -23,16 +23,16 @@ const createAgency = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             return;
         }
         // Check if agency with the same name already exists
-        const existingAgencies = yield (0, db_1.query)('SELECT * FROM Agencies WHERE name = ?', [name]);
+        const existingAgencies = yield (0, db_1.query)('SELECT * FROM agencies WHERE name = ?', [name]);
         if (existingAgencies.length > 0) {
             res.status(400).json({ message: 'An agency with this name already exists' });
             return;
         }
         // Insert the new agency
-        const result = yield (0, db_1.query)('INSERT INTO Agencies (name, email, phone, address, description) VALUES (?, ?, ?, ?, ?)', [name, email || null, phone || null, address || null, description || null]);
+        const result = yield (0, db_1.query)('INSERT INTO agencies (name, email, phone, address, description) VALUES (?, ?, ?, ?, ?)', [name, email || null, phone || null, address || null, description || null]);
         if (result.insertId) {
             // Fetch the newly created agency
-            const agencies = yield (0, db_1.query)('SELECT * FROM Agencies WHERE agency_id = ?', [result.insertId]);
+            const agencies = yield (0, db_1.query)('SELECT * FROM agencies WHERE agency_id = ?', [result.insertId]);
             res.status(201).json({
                 message: 'Agency created successfully',
                 agency: agencies[0]
@@ -53,7 +53,7 @@ exports.createAgency = createAgency;
 // @access  Private
 const getAgencies = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const agencies = yield (0, db_1.query)('SELECT * FROM Agencies ORDER BY name ASC');
+        const agencies = yield (0, db_1.query)('SELECT * FROM agencies ORDER BY name ASC');
         res.json(agencies);
     }
     catch (error) {
@@ -68,7 +68,7 @@ exports.getAgencies = getAgencies;
 const getAgencyById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const agencies = yield (0, db_1.query)('SELECT * FROM Agencies WHERE agency_id = ?', [id]);
+        const agencies = yield (0, db_1.query)('SELECT * FROM agencies WHERE agency_id = ?', [id]);
         if (agencies.length === 0) {
             res.status(404).json({ message: 'Agency not found' });
             return;
@@ -89,14 +89,14 @@ const updateAgency = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const { id } = req.params;
         const { name, email, phone, address, description } = req.body;
         // Check if agency exists
-        const agencies = yield (0, db_1.query)('SELECT * FROM Agencies WHERE agency_id = ?', [id]);
+        const agencies = yield (0, db_1.query)('SELECT * FROM agencies WHERE agency_id = ?', [id]);
         if (agencies.length === 0) {
             res.status(404).json({ message: 'Agency not found' });
             return;
         }
         // Check if name is being changed and if it already exists
         if (name && name !== agencies[0].name) {
-            const nameCheck = yield (0, db_1.query)('SELECT * FROM Agencies WHERE name = ? AND agency_id != ?', [name, id]);
+            const nameCheck = yield (0, db_1.query)('SELECT * FROM agencies WHERE name = ? AND agency_id != ?', [name, id]);
             if (nameCheck.length > 0) {
                 res.status(400).json({ message: 'An agency with this name already exists' });
                 return;
@@ -133,9 +133,9 @@ const updateAgency = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         // Add the agency ID to values array
         updateValues.push(id);
         // Execute the update query
-        yield (0, db_1.query)(`UPDATE Agencies SET ${updateFields.join(', ')} WHERE agency_id = ?`, updateValues);
+        yield (0, db_1.query)(`UPDATE agencies SET ${updateFields.join(', ')} WHERE agency_id = ?`, updateValues);
         // Fetch the updated agency
-        const updatedAgencies = yield (0, db_1.query)('SELECT * FROM Agencies WHERE agency_id = ?', [id]);
+        const updatedAgencies = yield (0, db_1.query)('SELECT * FROM agencies WHERE agency_id = ?', [id]);
         res.json({
             message: 'Agency updated successfully',
             agency: updatedAgencies[0]
@@ -151,7 +151,7 @@ const deleteAgency = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const { id } = req.params;
         // Check if agency exists
-        const agencies = yield (0, db_1.query)('SELECT * FROM Agencies WHERE agency_id = ?', [id]);
+        const agencies = yield (0, db_1.query)('SELECT * FROM agencies WHERE agency_id = ?', [id]);
         if (agencies.length === 0) {
             res.status(404).json({ message: 'Agency not found' });
             return;

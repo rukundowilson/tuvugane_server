@@ -40,14 +40,14 @@ const createTestAdmin = () => __awaiter(void 0, void 0, void 0, function* () {
             agency_id: 4 // Make sure this agency exists
         };
         // Check if admin with this email already exists
-        const [existingAdmins] = yield connection.execute('SELECT * FROM Admins WHERE email = ?', [admin.email]);
+        const [existingAdmins] = yield connection.execute('SELECT * FROM admins WHERE email = ?', [admin.email]);
         if (Array.isArray(existingAdmins) && existingAdmins.length > 0) {
             console.log('Admin with this email already exists. Updating password...');
             // Hash password
             const salt = yield bcryptjs_1.default.genSalt(10);
             const hashedPassword = yield bcryptjs_1.default.hash(admin.password, salt);
             // Update the existing admin's password
-            yield connection.execute('UPDATE Admins SET password_hash = ? WHERE email = ?', [hashedPassword, admin.email]);
+            yield connection.execute('UPDATE admins SET password_hash = ? WHERE email = ?', [hashedPassword, admin.email]);
             console.log(`Updated password for admin: ${admin.email}`);
         }
         else {
@@ -55,7 +55,7 @@ const createTestAdmin = () => __awaiter(void 0, void 0, void 0, function* () {
             const salt = yield bcryptjs_1.default.genSalt(10);
             const hashedPassword = yield bcryptjs_1.default.hash(admin.password, salt);
             // Insert new admin
-            const [result] = yield connection.execute('INSERT INTO Admins (name, email, password_hash, agency_id) VALUES (?, ?, ?, ?)', [admin.name, admin.email, hashedPassword, admin.agency_id]);
+            const [result] = yield connection.execute('INSERT INTO admins (name, email, password_hash, agency_id) VALUES (?, ?, ?, ?)', [admin.name, admin.email, hashedPassword, admin.agency_id]);
             console.log(`Created new test admin with email: ${admin.email}`);
         }
         // Print plaintext password for testing

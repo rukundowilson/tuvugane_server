@@ -92,7 +92,7 @@ const getAdminsByAgency = (req, res) => __awaiter(void 0, void 0, void 0, functi
     try {
         const { agencyId } = req.params;
         // Check if the agency exists
-        const agencies = yield (0, db_1.query)('SELECT * FROM Agencies WHERE agency_id = ?', [agencyId]);
+        const agencies = yield (0, db_1.query)('SELECT * FROM agencies WHERE agency_id = ?', [agencyId]);
         if (agencies.length === 0) {
             res.status(404).json({ message: 'Agency not found' });
             return;
@@ -120,8 +120,8 @@ const getAdminById = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         // Join with Agencies table to get agency name
         const admins = yield (0, db_1.query)(`
       SELECT a.admin_id, a.name, a.email, a.agency_id, a.created_at, ag.name as agency_name
-      FROM Admins a
-      LEFT JOIN Agencies ag ON a.agency_id = ag.agency_id
+      FROM admins a
+      LEFT JOIN agencies ag ON a.agency_id = ag.agency_id
       WHERE a.admin_id = ?
     `, [id]);
         if (admins.length === 0) {
@@ -194,7 +194,7 @@ const updateAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         // Add the admin ID to values array
         updateValues.push(id);
         // Execute the update query
-        yield (0, db_1.query)(`UPDATE Admins SET ${updateFields.join(', ')} WHERE admin_id = ?`, updateValues);
+        yield (0, db_1.query)(`UPDATE admins SET ${updateFields.join(', ')} WHERE admin_id = ?`, updateValues);
         // Fetch the updated admin with agency name
         const updatedAdmins = yield (0, db_1.query)(`
       SELECT a.admin_id, a.name, a.email, a.agency_id, a.created_at, ag.name as agency_name
@@ -281,7 +281,7 @@ const loginAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             return;
         }
         // Get agency name
-        const agencies = yield (0, db_1.query)('SELECT name FROM Agencies WHERE agency_id = ?', [admin.agency_id]);
+        const agencies = yield (0, db_1.query)('SELECT name FROM agencies WHERE agency_id = ?', [admin.agency_id]);
         const agencyName = agencies.length > 0 ? agencies[0].name : null;
         if (!agencyName) {
             res.status(403).json({ message: 'Associated agency not found' });
@@ -321,8 +321,8 @@ const getAdminProfile = (req, res) => __awaiter(void 0, void 0, void 0, function
         // Join with Agencies table to get agency name
         const admins = yield (0, db_1.query)(`
       SELECT a.admin_id, a.name, a.email, a.agency_id, a.created_at, ag.name as agency_name
-      FROM Admins a
-      LEFT JOIN Agencies ag ON a.agency_id = ag.agency_id
+      FROM admins a
+      LEFT JOIN agencies ag ON a.agency_id = ag.agency_id
       WHERE a.admin_id = ?
     `, [adminId]);
         if (admins.length === 0) {

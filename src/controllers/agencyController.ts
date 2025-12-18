@@ -16,7 +16,7 @@ export const createAgency = async (req: Request, res: Response): Promise<void> =
     }
 
     // Check if agency with the same name already exists
-    const existingAgencies = await query('SELECT * FROM Agencies WHERE name = ?', [name]);
+    const existingAgencies = await query('SELECT * FROM agencies WHERE name = ?', [name]);
     
     if (existingAgencies.length > 0) {
       res.status(400).json({ message: 'An agency with this name already exists' });
@@ -25,13 +25,13 @@ export const createAgency = async (req: Request, res: Response): Promise<void> =
 
     // Insert the new agency
     const result = await query(
-      'INSERT INTO Agencies (name, email, phone, address, description) VALUES (?, ?, ?, ?, ?)',
+      'INSERT INTO agencies (name, email, phone, address, description) VALUES (?, ?, ?, ?, ?)',
       [name, email || null, phone || null, address || null, description || null]
     );
 
     if (result.insertId) {
       // Fetch the newly created agency
-      const agencies = await query('SELECT * FROM Agencies WHERE agency_id = ?', [result.insertId]);
+      const agencies = await query('SELECT * FROM agencies WHERE agency_id = ?', [result.insertId]);
       
       res.status(201).json({
         message: 'Agency created successfully',
@@ -51,7 +51,7 @@ export const createAgency = async (req: Request, res: Response): Promise<void> =
 // @access  Private
 export const getAgencies = async (req: Request, res: Response): Promise<void> => {
   try {
-    const agencies = await query('SELECT * FROM Agencies ORDER BY name ASC');
+    const agencies = await query('SELECT * FROM agencies ORDER BY name ASC');
     res.json(agencies);
   } catch (error: any) {
     console.error(error);
@@ -66,7 +66,7 @@ export const getAgencyById = async (req: Request, res: Response): Promise<void> 
   try {
     const { id } = req.params;
     
-    const agencies = await query('SELECT * FROM Agencies WHERE agency_id = ?', [id]);
+    const agencies = await query('SELECT * FROM agencies WHERE agency_id = ?', [id]);
     
     if (agencies.length === 0) {
       res.status(404).json({ message: 'Agency not found' });
@@ -89,7 +89,7 @@ export const updateAgency = async (req: Request, res: Response): Promise<void> =
     const { name, email, phone, address, description }: UpdateAgencyDto = req.body;
     
     // Check if agency exists
-    const agencies = await query('SELECT * FROM Agencies WHERE agency_id = ?', [id]);
+    const agencies = await query('SELECT * FROM agencies WHERE agency_id = ?', [id]);
     
     if (agencies.length === 0) {
       res.status(404).json({ message: 'Agency not found' });
@@ -98,7 +98,7 @@ export const updateAgency = async (req: Request, res: Response): Promise<void> =
     
     // Check if name is being changed and if it already exists
     if (name && name !== agencies[0].name) {
-      const nameCheck = await query('SELECT * FROM Agencies WHERE name = ? AND agency_id != ?', [name, id]);
+      const nameCheck = await query('SELECT * FROM agencies WHERE name = ? AND agency_id != ?', [name, id]);
       
       if (nameCheck.length > 0) {
         res.status(400).json({ message: 'An agency with this name already exists' });
@@ -146,12 +146,12 @@ export const updateAgency = async (req: Request, res: Response): Promise<void> =
     
     // Execute the update query
     await query(
-      `UPDATE Agencies SET ${updateFields.join(', ')} WHERE agency_id = ?`,
+      `UPDATE agencies SET ${updateFields.join(', ')} WHERE agency_id = ?`,
       updateValues
     );
     
     // Fetch the updated agency
-    const updatedAgencies = await query('SELECT * FROM Agencies WHERE agency_id = ?', [id]);
+    const updatedAgencies = await query('SELECT * FROM agencies WHERE agency_id = ?', [id]);
     
     res.json({
       message: 'Agency updated successfully',
@@ -168,7 +168,7 @@ export const deleteAgency = async (req: Request, res: Response): Promise<void> =
     const { id } = req.params;
     
     // Check if agency exists
-    const agencies = await query('SELECT * FROM Agencies WHERE agency_id = ?', [id]);
+    const agencies = await query('SELECT * FROM agencies WHERE agency_id = ?', [id]);
     
     if (agencies.length === 0) {
       res.status(404).json({ message: 'Agency not found' });

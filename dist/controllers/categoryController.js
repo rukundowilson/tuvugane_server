@@ -21,6 +21,11 @@ exports.createCategory = (0, asyncHandler_1.asyncHandler)((req, res) => __awaite
         res.status(400);
         throw new Error('Please provide a category name');
     }
+    // Validate name length (max 255 characters)
+    if (name.length > 255) {
+        res.status(400);
+        throw new Error('Category name must be 255 characters or less');
+    }
     // Check if category already exists
     const [existingCategories] = yield db_1.pool.query('SELECT * FROM categories WHERE name = ?', [name]);
     if (Array.isArray(existingCategories) && existingCategories.length > 0) {
@@ -73,6 +78,11 @@ exports.updateCategory = (0, asyncHandler_1.asyncHandler)((req, res) => __awaite
     if (!name) {
         res.status(400);
         throw new Error('Please provide a category name');
+    }
+    // Validate name length (max 255 characters)
+    if (name.length > 255) {
+        res.status(400);
+        throw new Error('Category name must be 255 characters or less');
     }
     // Check if category exists
     const [categories] = yield db_1.pool.query('SELECT * FROM categories WHERE category_id = ?', [req.params.id]);

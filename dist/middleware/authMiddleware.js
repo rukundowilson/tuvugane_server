@@ -65,7 +65,7 @@ const superAdminOnly = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
             return;
         }
         // Otherwise check database (backward compatibility)
-        const superAdmins = yield (0, db_1.query)('SELECT * FROM SuperAdmins WHERE super_admin_id = ?', [req.user.id]);
+        const superAdmins = yield (0, db_1.query)('SELECT * FROM superadmins WHERE super_admin_id = ?', [req.user.id]);
         if (superAdmins.length === 0) {
             res.status(403).json({ message: 'Not authorized, super admin access required' });
             return;
@@ -92,7 +92,7 @@ const agencyAdminOnly = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
             return;
         }
         // Otherwise check database (backward compatibility)
-        const admins = yield (0, db_1.query)('SELECT * FROM Admins WHERE admin_id = ?', [req.user.id]);
+        const admins = yield (0, db_1.query)('SELECT * FROM admins WHERE admin_id = ?', [req.user.id]);
         if (admins.length === 0) {
             res.status(403).json({ message: 'Not authorized, agency admin access required' });
             return;
